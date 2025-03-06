@@ -7,3 +7,12 @@
 
 # Temporary lock file while building
 .hugo_build.lock
+
+# Raw input data folder
+/inputs/
+
+# Intermediate data processing directory
+/intermediates/
+
+# API keys
+.env
