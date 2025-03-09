@@ -1,6 +1,6 @@
 baseURL = 'https://example.org/'
 languageCode = 'en-us'
-title = 'Act I'
+title = 'Act I Blog'
 theme = 'hugo-classic'
 
 [sitemap]
