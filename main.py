@@ -11,9 +11,10 @@ import aiohttp
 from aiohttp import ClientSession
 from textual.app import App, ComposeResult
 from textual.containers import ScrollableContainer, Horizontal, Vertical
-from textual.widgets import Button, Log, Static, Header, Footer, ListItem, ListView
+from textual.widgets import Button, Log, Static, Header, Footer, ListItem, ListView, Input
 from textual.reactive import reactive
 from textual.binding import Binding
+from textual.message import Message
 
 
 class TwitterCrawlStatus:
@@ -29,10 +30,11 @@ class TwitterCrawlStatus:
         self.oldest_id = None
         self.is_complete_fetch = False
         self.pages_fetched = 0
+        self.estimated_total_tweets = 0  # Total tweets based on user profile
         # Track download attempts and success status for each URL
         self.tweet_id_to_url_attempts = {}  # Maps tweet_id -> {url -> attempt_count}
         self.tweet_id_to_url_success = {}   # Maps tweet_id -> {url -> success_bool}
-
+        
     @property
     def is_running(self) -> bool:
         return self.status == "Running"
@@ -47,6 +49,13 @@ class TwitterCrawlStatus:
             return None
         end_time = self.completed_at or time.time()
         return end_time - self.started_at
+        
+    @property
+    def progress_percentage(self) -> int:
+        """Calculate progress percentage based on estimated total tweets"""
+        if self.estimated_total_tweets <= 0:
+            return 0
+        return min(100, int((self.tweets_found / self.estimated_total_tweets) * 100))
 
     def start(self):
         self.status = "Running"
@@ -64,11 +73,13 @@ class TwitterCrawlStatus:
     def __str__(self) -> str:
         duration = f" ({self.duration:.1f}s)" if self.duration is not None else ""
         status_line = f"Status: {self.status}{duration}"
+        progress = f"{self.progress_percentage}%" if self.estimated_total_tweets > 0 else ""
         pages = f"Pages: {self.pages_fetched}" if self.pages_fetched > 0 else ""
-        counts = f"Tweets: {self.tweets_found} | Images: {self.images_found}/{self.images_downloaded}"
+        counts = f"Tweets: {self.tweets_found}/{self.estimated_total_tweets} | Images: {self.images_found}/{self.images_downloaded}"
+        stats = f"{counts} | Progress: {progress}" if progress else counts
         complete = " (Complete)" if self.is_complete_fetch else ""
         error = f"\nError: {self.error}" if self.error else ""
-        return f"{status_line}{complete}\n{counts} | {pages}{error}"
+        return f"{status_line}{complete}\n{stats} | {pages}{error}"
 
 
 class TwitterUserItem(ListItem):
@@ -140,6 +151,21 @@ class TwitterCrawlerApp(App):
     CrawlStatusWidget {
         height: auto;
     }
+    
+    .log-filter {
+        margin-bottom: 1;
+    }
+    
+    #add-user-container {
+        margin-top: 1;
+        border-top: solid $primary;
+        padding-top: 1;
+    }
+    
+    #add-user-input {
+        margin-bottom: 1;
+        width: 100%;
+    }
     """
 
     BINDINGS = [
@@ -148,6 +174,7 @@ class TwitterCrawlerApp(App):
         Binding("a", "run_all", "Run All"),
         Binding("s", "stop_all", "Stop All"),
         Binding("d", "retry_downloads", "Retry Downloads"),
+        Binding("n", "focus_new_user", "Add User"),
     ]
 
     def __init__(self):
@@ -158,23 +185,34 @@ class TwitterCrawlerApp(App):
         self.image_session = None
         self.selected_username = None
         self.running_tasks = []
-
+        self.current_log_filter = None
+        
     def compose(self) -> ComposeResult:
         yield Header()
 
         with Horizontal():
             with ScrollableContainer(id="sidebar"):
                 yield ListView(id="user-list")
+                with Vertical(id="add-user-container"):
+                    from textual.widgets import Input
+                    yield Input(placeholder="Enter username to add", id="add-user-input")
+                    yield Button("Add User", id="add-user-button", variant="primary")
 
             with Vertical(id="details"):
                 yield Static("Select a username to see details", id="status-display")
+                
+                # Add log filter options
+                with Horizontal(classes="log-filter"):
+                    yield Static("Log Filter: ", classes="log-filter-label")
+                    yield Button("All Logs", id="log-filter-all", variant="success")
+                    yield Button("Current User Only", id="log-filter-user", variant="default")
+                    yield Static("", id="log-filter-status", classes="log-filter-status")
+                    
                 with ScrollableContainer(id="status-log"):
                     yield Log(id="status-log-content")
 
                 with Horizontal():
                     yield Button("Run Selected", id="run-selected")
-                    yield Button("Run All", id="run-all")
-                    yield Button("Stop All", id="stop-all")
                     yield Button("Retry Downloads", id="retry-downloads")
 
         yield Footer()
@@ -189,14 +227,96 @@ class TwitterCrawlerApp(App):
         connector = aiohttp.TCPConnector(limit=3)  # Max 3 concurrent connections
         self.image_session = aiohttp.ClientSession(connector=connector)
         
+        # Initialize a virtual "All" user for aggregate stats
+        self.crawl_statuses["All"] = TwitterCrawlStatus("All")
+        
         user_list = self.query_one("#user-list", ListView)
+        
+        # Add "All" user first
+        user_list.append(TwitterUserItem("All"))
+        
+        # Add actual users
         for username in self.usernames:
             user_list.append(TwitterUserItem(username))
             self.crawl_statuses[username] = TwitterCrawlStatus(username)
+            
+            # Start fetching user profile info in the background to get tweet counts
+            asyncio.create_task(self.fetch_user_profile_info(username))
+        
+        # Set "All" user as initially selected
+        user_list.index = 0
+        self.selected_username = "All"
+        self.update_status_widget("All")
+        
+        # Configure log filter
+        self.current_log_filter = None  # No filter by default
         
         # Start crawling automatically
         self.log_gui("Starting automatic crawling of all accounts...")
         self.action_run_all()
+        
+    async def fetch_user_profile_info(self, username: str) -> None:
+        """Fetch user profile information to get tweet count and other stats."""
+        try:
+            self.log_gui(f"Fetching profile info for @{username}...")
+            
+            async with self.session.get(f"/twitter/user/{username}") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if "statuses_count" in data:
+                        status = self.crawl_statuses[username]
+                        status.estimated_total_tweets = data["statuses_count"]
+                        self.log_gui(f"User @{username} has approximately {status.estimated_total_tweets} tweets")
+                        
+                        # Update the status display if this user is selected
+                        if self.selected_username == username:
+                            self.update_status_widget(username)
+                        
+                        # Update the "All" aggregate status
+                        self.update_all_status()
+                else:
+                    error_text = await response.text()
+                    self.log_gui(f"Error fetching profile for @{username}: {response.status} - {error_text}")
+        except Exception as e:
+            self.log_gui(f"Exception fetching profile for @{username}: {e}")
+            
+    def update_all_status(self) -> None:
+        """Update the aggregate 'All' status based on individual user stats."""
+        all_status = self.crawl_statuses["All"]
+        
+        # Reset counters
+        all_status.tweets_found = 0
+        all_status.images_found = 0 
+        all_status.images_downloaded = 0
+        all_status.estimated_total_tweets = 0
+        all_status.pages_fetched = 0
+        
+        # Set status based on if any users are running
+        any_running = any(status.is_running for username, status in self.crawl_statuses.items() if username != "All")
+        all_complete = all(status.is_complete for username, status in self.crawl_statuses.items() if username != "All")
+        
+        if any_running:
+            all_status.status = "Running"
+            if all_status.started_at is None:
+                all_status.started_at = time.time()
+        elif all_complete and len(self.usernames) > 0:
+            all_status.status = "Completed"
+            if all_status.completed_at is None:
+                all_status.completed_at = time.time()
+                
+        # Aggregate stats
+        for username, status in self.crawl_statuses.items():
+            if username != "All":
+                all_status.tweets_found += status.tweets_found
+                all_status.images_found += status.images_found
+                all_status.images_downloaded += status.images_downloaded
+                all_status.estimated_total_tweets += status.estimated_total_tweets
+                all_status.pages_fetched += status.pages_fetched
+                
+        # Update if All is currently displayed
+        if self.selected_username == "All":
+            self.update_status_widget("All")
 
     def load_usernames(self) -> None:
         try:
@@ -210,10 +330,22 @@ class TwitterCrawlerApp(App):
     def on_list_view_selected(self, event: ListView.Selected) -> None:
         item = event.item
         if isinstance(item, TwitterUserItem):
+            previous_username = self.selected_username
             self.selected_username = item.username
             status = self.crawl_statuses[item.username]
             status_display = self.query_one("#status-display", Static)
             status_display.update(f"@{status.username}\n{status}")
+            
+            # Update the log filter button state if Current User filter is active
+            user_btn = self.query_one("#log-filter-user", Button)
+            if user_btn.variant == "success":
+                # If Current User filter was active, update it to the newly selected user
+                self.set_log_filter(self.selected_username)
+                # Inform the user that the filter has been updated
+                print(f"Log filter updated to newly selected user: {self.selected_username}")
+                
+            # Debug print
+            print(f"User selection changed from {previous_username} to {self.selected_username}")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
@@ -225,6 +357,97 @@ class TwitterCrawlerApp(App):
             self.action_stop_all()
         elif button_id == "retry-downloads":
             self.action_retry_downloads()
+        elif button_id == "log-filter-all":
+            self.set_log_filter(None)
+        elif button_id == "log-filter-user":
+            self.set_log_filter(self.selected_username)
+        elif button_id == "add-user-button":
+            self.add_new_user()
+            
+    def set_log_filter(self, username: Optional[str]) -> None:
+        """Set the current log filter to show logs only for the given username."""
+        # Update the current filter
+        self.current_log_filter = username
+        
+        # Update button styles to show which filter is active
+        all_btn = self.query_one("#log-filter-all", Button)
+        user_btn = self.query_one("#log-filter-user", Button)
+        
+        # Clear the log widget first to start fresh
+        log_widget = self.query_one("#status-log-content", Log)
+        log_widget.clear()
+        
+        if username is None:
+            all_btn.variant = "success"
+            user_btn.variant = "default"
+            self.log_gui("Showing logs for all users")
+            print(f"Log filter set to: None (all users)")
+        else:
+            all_btn.variant = "default"
+            user_btn.variant = "success"
+            # Don't use log_gui here to avoid filtering out this message
+            log_widget.write(f"Showing logs for @{username} only\n")
+            print(f"Log filter set to: {username}")
+            
+    def action_focus_new_user(self) -> None:
+        """Focus the add user input field."""
+        input_field = self.query_one("#add-user-input", Input)
+        input_field.focus()
+        
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        """Handle when the user presses Enter in the input field."""
+        if event.input.id == "add-user-input":
+            self.add_new_user()
+        
+    def add_new_user(self) -> None:
+        """Add a new user from the input field and automatically start crawling."""
+        from textual.widgets import Input
+        
+        input_field = self.query_one("#add-user-input", Input)
+        new_username = input_field.value.strip()
+        
+        # Validate username
+        if not new_username:
+            self.log_gui("Please enter a username to add")
+            return
+            
+        # Remove @ if user included it
+        if new_username.startswith('@'):
+            new_username = new_username[1:]
+        
+        # Check if user already exists
+        if new_username in self.usernames:
+            self.log_gui(f"User @{new_username} is already in the list")
+            return
+            
+        # Add to usernames list
+        self.usernames.append(new_username)
+        
+        # Save to file
+        try:
+            with open("inputs/twitter_usernames.json", "w") as f:
+                json.dump(self.usernames, f, indent=4)
+            self.log_gui(f"Added @{new_username} to the usernames list")
+        except Exception as e:
+            self.log_gui(f"Error saving usernames: {e}")
+            return
+            
+        # Initialize crawl status
+        self.crawl_statuses[new_username] = TwitterCrawlStatus(new_username)
+        
+        # Start fetching profile info
+        asyncio.create_task(self.fetch_user_profile_info(new_username))
+        
+        # Add to UI list
+        user_list = self.query_one("#user-list", ListView)
+        user_list.append(TwitterUserItem(new_username))
+        
+        # Clear input field
+        input_field.value = ""
+        
+        # Automatically start crawling the new user
+        self.log_gui(f"Automatically starting crawl for newly added user @{new_username}")
+        self.run_crawler(new_username)
 
     def action_run_selected(self) -> None:
         if self.selected_username:
@@ -297,6 +520,8 @@ class TwitterCrawlerApp(App):
             atomic_write_json(existing_data, data_file, self.log_gui)
             
             self.log_gui(f"Completed manual retry for @{username}")
+            # Update the "All" status
+            self.update_all_status()
             
         except Exception as e:
             self.log_gui(f"Error during manual retry: {e}")
@@ -317,6 +542,11 @@ class TwitterCrawlerApp(App):
         self.log_gui("Sessions closed")
 
     def run_crawler(self, username: str) -> None:
+        # Skip if "All" is selected - it's just a virtual user
+        if username == "All":
+            self.action_run_all()
+            return
+            
         status = self.crawl_statuses[username]
         if status.is_running:
             self.log_gui(f"Already crawling @{username}")
@@ -324,6 +554,7 @@ class TwitterCrawlerApp(App):
 
         status.start()
         self.update_status_widget(username)
+        self.update_all_status()  # Update the All view
 
         self.log_gui(f"Starting crawl for @{username}")
         task = asyncio.create_task(self.crawl_user(username, status))
@@ -334,6 +565,10 @@ class TwitterCrawlerApp(App):
         if self.selected_username == username:
             status = self.crawl_statuses[username]
             status_display.update(f"@{status.username}\n{status}")
+            
+        # Update the "All" status whenever any user's status changes
+        if username != "All":
+            self.update_all_status()
 
     def log_gui(self, message: str) -> None:
         try:
