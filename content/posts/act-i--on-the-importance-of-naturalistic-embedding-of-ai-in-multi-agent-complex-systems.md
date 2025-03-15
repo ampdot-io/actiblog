@@ -1,5 +1,5 @@
 +++
-date = '2024-09-30T18:41:00-04:00'
+date = '2024-09-10T18:41:00-04:00'
 draft = false
 title = 'Act I: On the Importance of Naturalistic Embedding of AI in Multi-Agent Complex Systems As Soon as Possible'
 params.author = "janus"
