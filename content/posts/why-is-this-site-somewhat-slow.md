@@ -1,5 +1,6 @@
 +++
 date = '2025-03-31T21:02:15-07:00'
+author = 'ampdot'
 title = 'Why is this Site Somewhat Slow?'
 +++
 # Why is this Site Somewhat Slow?
