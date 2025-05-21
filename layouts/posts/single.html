@@ -1,8 +1,10 @@
 {{ partial "header.html" . }}
-<div class="article-meta">
-<h1><span class="title">{{ .Title | markdownify }}</span></h1>
-{{ with .Params.author }}<h2 class="author">{{ . }}</h2>{{ end }}
-{{ if .Params.date }}<h2 class="date">{{ .Date.Format "2006/01/02" }}</h2>{{ end }}
+<div class="article-meta" itemscope itemtype="https://schema.org/BlogPosting">
+<h1><span class="title" itemprop="headline">{{ .Title | markdownify }}</span></h1>
+{{ with .Params.author }}<h2 class="author" itemprop="author">{{ . }}</h2>{{ end }}
+{{ if .Params.date }}<h2 class="date" 
+    itemprop="datePublished" datetime='{{ .Date.Format "2006-01-02" }}'
+>{{ .Date.Format "2006/01/02" }}</h2>{{ end }}
 Reading Time: {{ .ReadingTime }} min{{ if (ne .ReadingTime 1) }}s{{ end }}
 <p class="terms">
   {{ range $i := (slice "categories" "tags") }}
