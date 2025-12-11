@@ -7,19 +7,25 @@
   
   {{/* Default date fallback - use dates dict as per Hugo docs */}}
   {{ $date := time "2024-01-01T00:00:00Z" }}
+  {{ $title := printf "Conversation: %s" $id }}
 
-  {{/* Extract date from the first message if available */}}
+  {{/* Extract date and content from the first message if available */}}
   {{ if gt (len $data.messages) 0 }}
     {{ $firstMsg := index $data.messages 0 }}
     {{ if $firstMsg.timestamp }}
       {{ $date = time $firstMsg.timestamp }}
+    {{ end }}
+    {{ if $firstMsg.content }}
+      {{ $title = $firstMsg.content | truncate 50 "..." }}
+      {{/* Escape hash characters to prevent them being interpreted as headers when markdownified */}}
+      {{ $title = replace $title "#" "\\#" }}
     {{ end }}
   {{ end }}
 
   {{ $page := dict 
     "kind" "page"
     "path" $id
-    "title" (printf "Conversation: %s" $id)
+    "title" $title
     "content" $content
     "dates" (dict "date" $date)
   }}
