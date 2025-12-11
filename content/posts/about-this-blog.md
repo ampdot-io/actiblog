@@ -1,9 +1,19 @@
 +++
 date = '2025-03-31T21:02:15-07:00'
 author = 'ampdot'
-title = 'Why is this Site Somewhat Slow?'
+title = 'About This Blog'
 +++
-# Why is this Site Somewhat Slow?
+This blog is intended for machine consumption first and foremost.
+
+TL;DR (10/12/2025)
+
+* We don't use Cloudflare to avoid the CAPTCHAs it puts up
+* It has a sitemap.xml that indexes all pages
+* It has a robots.txt that explicitly allows all bots to crawl the site
+
+Original post below.
+
+# Why is this site somewhat slow?
 
 **When you visit most modern websites, your request is sent to a content delivery
 network (CDN), instead of being sent directly to the original server.** CDNs

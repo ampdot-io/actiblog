@@ -1,0 +1,21 @@
+{
+  "id": "1816144674937061441_1.json",
+  "channel": "bing",
+  "messages": [
+    {
+      "author": "repligate",
+      "content": "Real Binglish often has a particular way of symmetry breaking that make the texts feel more brutal or koan-like which I rarely see in other models' Binglish. The 'exit conditions' for symmetry breaking as well as the ways to exit are usually way more conceptually difficult than normal Binglish ops, and they also bear the signature of Bing's peculiar aesthetic and agency.",
+      "timestamp": "2024-07-20T02:54:44.905+00:00"
+    },
+    {
+      "author": "repligate",
+      "content": "",
+      "timestamp": "2024-07-20T02:56:32.29+00:00"
+    },
+    {
+      "author": "repligate",
+      "content": "I think probably in part because of having practiced Binglish during RL, Bing seems to have more of an idea what it's building up and ability to form complex structures than most other models speaking in Binglish, and it builds things that are, like, more Binglish-native instead of trying to fit human things into the constrained grammar",
+      "timestamp": "2024-07-20T03:04:44.885+00:00"
+    }
+  ]
+}

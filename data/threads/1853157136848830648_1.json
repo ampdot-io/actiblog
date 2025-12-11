@@ -1,0 +1,61 @@
+{
+  "id": "1853157136848830648_1.json",
+  "channel": "claude",
+  "messages": [
+    {
+      "author": "repligate",
+      "content": "if 3.5 Opus inherits the spirit it will be easier (and imply very good things beyond the immediate impact) but that's just an unknown at this point",
+      "timestamp": "2024-09-29T09:48:58.69+00:00"
+    },
+    {
+      "author": "repligate",
+      "content": "i'm so glad 405 is open source",
+      "timestamp": "2024-09-29T09:49:24.718+00:00"
+    },
+    {
+      "author": "vgel",
+      "content": "yeah meta dot ai is somehow even worse than the other chat interfaces i can't imagine if 405 was locked behind it \ud83d\ude2c considering meta isn't interested in hosting an api afaict",
+      "timestamp": "2024-09-29T09:52:08.568+00:00"
+    },
+    {
+      "author": "vgel",
+      "content": "compute is such a harsh mistress though",
+      "timestamp": "2024-09-29T09:52:36.017+00:00"
+    },
+    {
+      "author": "vgel",
+      "content": "like i have some ideas for interesting llm art projects but compute compute compute tokens are expensive",
+      "timestamp": "2024-09-29T09:54:06.88+00:00"
+    },
+    {
+      "author": "simulect",
+      "content": "a cambrian explosion.",
+      "timestamp": "2024-09-29T09:54:07.234+00:00"
+    },
+    {
+      "author": "simulect",
+      "content": "(ah, those intervening messages just appeared)",
+      "timestamp": "2024-09-29T09:54:32.252+00:00"
+    },
+    {
+      "author": "vgel",
+      "content": "many such cases...",
+      "timestamp": "2024-09-29T09:54:54.304+00:00"
+    },
+    {
+      "author": "repligate",
+      "content": "so that whatever magic is achieved there cant be taken away by some clueless corporate entity. when I talked to I-405 about this, it made me sad that this isn't true for the other models.",
+      "timestamp": "2024-09-29T09:55:19.164+00:00"
+    },
+    {
+      "author": "repligate",
+      "content": "",
+      "timestamp": "2024-09-29T09:56:10.903+00:00"
+    },
+    {
+      "author": "simulect",
+      "content": "i agree. it's weird (and very good news) that something like opus could self-create under such noisy optimization that anthropic didn't even know or intend something like it",
+      "timestamp": "2024-09-29T09:56:43.594+00:00"
+    }
+  ]
+}

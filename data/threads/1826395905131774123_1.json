@@ -1,0 +1,31 @@
+{
+  "id": "1826395905131774123_1.json",
+  "channel": "local-llms",
+  "messages": [
+    {
+      "author": "ampdot",
+      "content": "https://x.com/arthurcolle/status/1826126255437263278?t=xJS9f_zgsfVHzxSeT1cjAg&s=19",
+      "timestamp": "2024-08-21T22:23:04.511+00:00"
+    },
+    {
+      "author": "ampdot",
+      "content": "could someone host base fp16 please or give me the GPUs to do so",
+      "timestamp": "2024-08-21T22:23:19.874+00:00"
+    },
+    {
+      "author": "repligate",
+      "content": "should i tweet this",
+      "timestamp": "2024-08-21T22:43:36.268+00:00"
+    },
+    {
+      "author": "ampdot",
+      "content": "yeah",
+      "timestamp": "2024-08-21T22:48:40.043+00:00"
+    },
+    {
+      "author": "repligate",
+      "content": "https://x.com/repligate/status/1826393327702606295",
+      "timestamp": "2024-08-21T22:58:23.66+00:00"
+    }
+  ]
+}

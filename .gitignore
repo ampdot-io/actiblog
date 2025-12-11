@@ -2,6 +2,9 @@
 /public/
 /resources/
 
+# Never commit this folder
+/raw_do_not_commit/
+
 # Hugo working directory
 /hugo_stats.json
 

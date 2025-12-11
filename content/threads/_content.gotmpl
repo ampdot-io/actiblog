@@ -1,0 +1,27 @@
+{{/* content/threads/_content.gotmpl */}}
+{{ range $id, $data := .Site.Data.threads }}
+  {{ $content := dict 
+    "mediaType" "text/markdown"
+    "value" (printf "{{< thread %q >}}" $id)
+  }}
+  
+  {{/* Default date fallback - use dates dict as per Hugo docs */}}
+  {{ $date := time "2024-01-01T00:00:00Z" }}
+
+  {{/* Extract date from the first message if available */}}
+  {{ if gt (len $data.messages) 0 }}
+    {{ $firstMsg := index $data.messages 0 }}
+    {{ if $firstMsg.timestamp }}
+      {{ $date = time $firstMsg.timestamp }}
+    {{ end }}
+  {{ end }}
+
+  {{ $page := dict 
+    "kind" "page"
+    "path" $id
+    "title" (printf "Conversation: %s" $id)
+    "content" $content
+    "dates" (dict "date" $date)
+  }}
+  {{ $.AddPage $page }}
+{{ end }}

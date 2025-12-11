@@ -1,27 +1,26 @@
 {{ partial "header.html" . }}
 <div class="article-meta" itemscope itemtype="https://schema.org/BlogPosting">
-<h1><span class="title" itemprop="headline">{{ .Title | markdownify }}</span></h1>
-{{ with .Params.author }}<h2 class="author" itemprop="author">{{ . }}</h2>{{ end }}
-{{ if .Params.date }}<h2 class="date" 
-    itemprop="datePublished" datetime='{{ .Date.Format "2006-01-02" }}'
->{{ .Date.Format "2006/01/02" }}</h2>{{ end }}
-Reading Time: {{ .ReadingTime }} min{{ if (ne .ReadingTime 1) }}s{{ end }}
-<p class="terms">
-  {{ range $i := (slice "categories" "tags") }}
-  {{ with ($.Param $i) }}
-  {{ $i | title }}: {{ range $k := . }}<a href="{{ relURL (print "/" $i "/" $k | urlize) }}">{{$k}}</a> {{ end }}
-  {{ end }}
-  {{ end }}
-</p>
+  <h1><span class="title" itemprop="headline">{{ .Title | markdownify }}</span></h1>
+  {{ with .Params.author }}<h2 class="author" itemprop="author">{{ . }}</h2>{{ end }}
+  {{ if .Params.date }}<h2 class="date" itemprop="datePublished" datetime='{{ .Date.Format "01/02/2006" }}'>{{
+    .Date.Format "01/02/2006" }}</h2>{{ end }}
+  Reading Time: {{ .ReadingTime }} min{{ if (ne .ReadingTime 1) }}s{{ end }}
+  <p class="terms">
+    {{ range $i := (slice "categories" "tags") }}
+    {{ with ($.Param $i) }}
+    {{ $i | title }}: {{ range $k := . }}<a href="{{ relURL (print " /" $i "/" $k | urlize) }}">{{$k}}</a> {{ end }}
+    {{ end }}
+    {{ end }}
+  </p>
 </div>
 
 {{ if .Params.toc }}
-  {{ with .TableOfContents }}
-  <div id="table-of-contents">
-    <h2>Table of Contents</h2>
-    {{ . | safeHTML }}
-  </div>
-  {{ end }}
+{{ with .TableOfContents }}
+<div id="table-of-contents">
+  <h2>Table of Contents</h2>
+  {{ . | safeHTML }}
+</div>
+{{ end }}
 {{ end }}
 
 <div class="content-wrapper">
