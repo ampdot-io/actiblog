@@ -1,0 +1,139 @@
+<style>
+  .thread-container {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  .thread-meta {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+
+  .message {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: #fff;
+    border-radius: 4px;
+    border: 1px solid #eee;
+  }
+
+  .message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 0.25rem;
+  }
+
+  .message-author {
+    font-weight: bold;
+    color: #2c3e50;
+  }
+
+  .message-time {
+    color: #95a5a6;
+    font-size: 0.8rem;
+  }
+
+  .message-content {
+    /* white-space: pre-wrap; Removed to fix list spacing issues */
+    line-height: 1.5;
+    color: #333;
+  }
+
+  .message-content+.message-content {
+    margin-top: 0.5rem;
+  }
+
+  /* Compact markdown lists */
+  .message-content ul,
+  .message-content ol {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    padding-left: 1.5em;
+  }
+
+  .message-content li {
+    margin-bottom: 0.1em;
+  }
+
+  .message-content li:last-child {
+    margin-bottom: 0;
+  }
+
+  .message-content li p {
+    margin: 0;
+  }
+</style>
+{{ $id := .Get 0 }}
+{{ $data := index .Site.Data.threads $id }}
+{{ with $data }}
+<div class="thread-container">
+  <div class="thread-meta">
+    Channel: {{ .channel }}
+  </div>
+  {{ $lastAuthor := "" }}
+  {{ range $index, $element := .messages }}
+  {{ if and (ne $index 0) (ne .author $lastAuthor) }}
+</div>
+{{ end }}
+
+{{ if or (eq $index 0) (ne .author $lastAuthor) }}
+<div class="message">
+  <div class="message-header">
+    <span class="message-author">{{ .author }}</span>
+    <span class="message-time" data-timestamp="{{ .timestamp }}">{{ (time .timestamp).Local.Format "01/02/2006 03:04 PM"
+      }}</span>
+  </div>
+  {{ end }}
+
+  <div class="message-content">{{ .content | markdownify }}</div>
+  {{ $lastAuthor = .author }}
+  {{ end }}
+  {{ if gt (len .messages) 0 }}
+</div>
+{{ end }}
+</div>
+{{ else }}
+<div class="thread-container">
+  <p><em>Thread not found: {{ $id }}</em></p>
+  <p><small>Available threads: {{ len .Site.Data.threads }}</small></p>
+</div>
+{{ end }}
+
+<script>
+  (function () {
+    function updateTimes() {
+      const times = document.querySelectorAll('.message-time:not([data-localized])');
+      times.forEach(el => {
+        el.setAttribute('data-localized', 'true');
+        const ts = el.getAttribute('data-timestamp');
+        if (ts) {
+          const date = new Date(ts);
+          // Use user's locale, but force numeric to avoid long textual months if preferred
+          el.textContent = date.toLocaleString(undefined, {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit'
+          });
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', updateTimes);
+    } else {
+      updateTimes();
+    }
+  })();
+</script>
