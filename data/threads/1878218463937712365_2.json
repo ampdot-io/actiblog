@@ -42,5 +42,6 @@
       "content": "finish it",
       "timestamp": "2024-11-24T20:20:17.724+00:00"
     }
-  ]
+  ],
+  "title": "nano modify speech_tone.json --explicit True -> speech.yaml"
 }

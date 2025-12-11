@@ -19,7 +19,7 @@
   {{ $page := dict 
     "kind" "page"
     "path" $id
-    "title" (printf "Conversation: %s" $id)
+    "title" (or $data.title (printf "Conversation: %s" $id))
     "content" $content
     "dates" (dict "date" $date)
   }}
