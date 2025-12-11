@@ -17,6 +17,8 @@
     {{ end }}
     {{ if $firstMsg.content }}
       {{ $title = $firstMsg.content | truncate 50 "..." }}
+      {{/* Escape hash characters to prevent them being interpreted as headers when markdownified */}}
+      {{ $title = replace $title "#" "\\#" }}
     {{ end }}
   {{ end }}
 
