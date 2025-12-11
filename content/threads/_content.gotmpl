@@ -16,10 +16,16 @@
     {{ end }}
   {{ end }}
 
-  {{ $page := dict 
+  {{/* Use title from data, fallback to generic if not present */}}
+  {{ $title := "Untitled Conversation" }}
+  {{ if $data.title }}
+    {{ $title = $data.title }}
+  {{ end }}
+
+  {{ $page := dict
     "kind" "page"
     "path" $id
-    "title" (printf "Conversation: %s" $id)
+    "title" $title
     "content" $content
     "dates" (dict "date" $date)
   }}
