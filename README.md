@@ -1,9 +1,5 @@
 # actiblog
 
-**note:** this version of the documentation is intended for developers or other
-people comfortable with using command-line tools. stay tuned for a guide
-oriented towards human blog post contributors
-
 ## install
 
 1. install [uv](https://docs.astral.sh/uv/#installation)
@@ -25,4 +21,8 @@ hugo new content content/posts/my-post.md
 
 - `inputs/` - input data
 - `content/` - manually written posts for Hugo
-- 
+- `data/` - input for automatic page creation by Hugo
+
+## attribution
+
+Thanks to Claude 3.7 Sonnet for OCR work, Gemini 3 and joysatisficer for programming help. ampdot performed key architectural design.
