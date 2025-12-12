@@ -21,18 +21,19 @@
   </head>
 
   <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <header>
-      <nav>
+      <nav aria-label="Main">
         <ul>
           {{ $title := .Title }}
           {{ $section :=  .Section }}
           <li class="pull-left {{ if .IsHome }}current{{ end }}">
-            <a href="{{ .Site.BaseURL }}">~/{{  .Site.Title}}</a>
+            <a href="{{ .Site.BaseURL }}" {{ if .IsHome }}aria-current="page"{{ end }}>~/{{  .Site.Title}}</a>
           </li>
           {{ range .Site.Menus.main }}
           {{ $name :=  .Name }}
           <li class="pull-left {{ if eq $name $title }}current{{ else if eq $section $name }}current{{ else if eq $title (pluralize $name) }}current{{ end }}">
-            <a href="{{ .URL }}">~/{{  .Name }}</a>
+            <a href="{{ .URL }}" {{ if or (eq $name $title) (eq $section $name) (eq $title (pluralize $name)) }}aria-current="page"{{ end }}>~/{{  .Name }}</a>
           </li>
           {{end}}
 
