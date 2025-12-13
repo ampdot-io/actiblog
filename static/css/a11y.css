@@ -1,0 +1,25 @@
+/* Accessible skip link */
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: 0;
+  background: #613DC1;
+  color: white;
+  padding: 8px;
+  z-index: 1000;
+  text-decoration: none;
+  border-radius: 0 0 5px 5px;
+  font-weight: bold;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .skip-link {
+    background: #EBC3DB;
+    color: #393E41;
+  }
+}
