@@ -2,8 +2,8 @@
 
 <div class="content-wrapper">
   <main id="main-content">
-    {{if not .IsHome }}
-      <h1>{{ .Title | markdownify }}</h1>
+  {{if not .IsHome }}
+    <h1>{{ .Title | markdownify }}</h1>
     {{ end }}
 
     {{ .Content }}
