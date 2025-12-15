@@ -1,0 +1,17 @@
+{{ partial "header.html" . }}
+
+<main id="main-content">
+  <div class="content-wrapper">
+    <h1>{{ .Title }}</h1>
+
+    <ul class="terms">
+      {{ range .Data.Terms }}
+      <li>
+        <a href="{{ .Page.Permalink }}">{{ .Page.Title }}</a> ({{ .Count }})
+      </li>
+      {{ end }}
+    </ul>
+  </div>
+</main>
+
+{{ partial "footer.html" . }}
