@@ -1,6 +1,7 @@
 {{ partial "header.html" . }}
 
 <div class="content-wrapper">
+  <main id="main-content">
     <h1>Latest Posts</h1>
     {{ .Content }}
 
@@ -18,6 +19,7 @@
         <h3><a href="/threads">View Conversations ({{ len (where .Site.RegularPages "Section" "threads") }})</a>
         </h3>
     </div>
+  </main>
 </div>
 
 {{ partial "footer.html" . }}
