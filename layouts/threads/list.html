@@ -1,6 +1,6 @@
 {{ partial "header.html" . }}
 
-<div class="content-wrapper">
+<main class="content-wrapper" id="main-content">
 {{if not .IsHome }}
   <h1>{{ .Title | markdownify }}</h1>
   {{ end }}
@@ -17,5 +17,5 @@
      </li>
      {{ end }}
    </ul>
-</div>
+</main>
 {{ partial "footer.html" . }}
