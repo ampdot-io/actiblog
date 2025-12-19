@@ -9,3 +9,5 @@ theme = 'hugo-classic'
   filename = 'sitemap.xml'
   priority = -1
 
+[params]
+  custom_css = ["css/a11y.css"]

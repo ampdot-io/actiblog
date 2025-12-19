@@ -1,23 +1,25 @@
 {{ partial "header.html" . }}
 
 <div class="content-wrapper">
-    <h1>Latest Posts</h1>
-    {{ .Content }}
+    <main id="main-content">
+        <h1>Latest Posts</h1>
+        {{ .Content }}
 
-    <ul>
-        {{/* Filter for posts section only */}}
-        {{ range (where .Site.RegularPages "Section" "posts") }}
-        <li>
-            <span class="date">{{ .Date.Format "01/02/2006" }}</span>
-            <a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a>
-        </li>
-        {{ end }}
-    </ul>
+        <ul>
+            {{/* Filter for posts section only */}}
+            {{ range (where .Site.RegularPages "Section" "posts") }}
+            <li>
+                <span class="date">{{ .Date.Format "01/02/2006" }}</span>
+                <a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a>
+            </li>
+            {{ end }}
+        </ul>
 
-    <div style="margin-top: 2rem;">
-        <h3><a href="/threads">View Conversations ({{ len (where .Site.RegularPages "Section" "threads") }})</a>
-        </h3>
-    </div>
+        <div style="margin-top: 2rem;">
+            <h3><a href="/threads">View Conversations ({{ len (where .Site.RegularPages "Section" "threads") }})</a>
+            </h3>
+        </div>
+    </main>
 </div>
 
 {{ partial "footer.html" . }}
