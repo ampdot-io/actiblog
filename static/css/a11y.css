@@ -1,0 +1,30 @@
+/* Accessible skip link */
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: 0;
+  background: #000;
+  color: #fff;
+  padding: 8px;
+  z-index: 1000;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.skip-link:focus {
+  top: 0;
+  left: 0;
+  outline: 3px solid #ffcc00;
+}
+
+/* Visually hidden helper class (often useful for accessibility) */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

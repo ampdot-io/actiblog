@@ -15,12 +15,13 @@
     <link rel="stylesheet" href="{{ "/css/style.css" | relURL }}" />
     <link rel="stylesheet" href="{{ "/css/fonts.css" | relURL }}" />
     {{ range .Site.Params.custom_css -}}
-    <link rel="stylesheet" href="{{ . | absURL }}">
+    <link rel="stylesheet" href="{{ . | relURL }}">
     {{- end }}
     {{ partial "head_custom.html" . }}
   </head>
 
   <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <header>
       <nav>
         <ul>
