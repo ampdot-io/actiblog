@@ -3,6 +3,9 @@ languageCode = 'en-us'
 title = 'Act I Blog'
 theme = 'hugo-classic'
 
+[params]
+  custom_css = ["css/a11y.css"]
+
 [sitemap]
   changeFreq = ''
   disable = false
